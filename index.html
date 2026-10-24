@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8f5">
+  <title>NEET Compass — your preparation, in focus</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172d29;
+      --muted: #75847f;
+      --line: #e8eeea;
+      --paper: #fff;
+      --canvas: #f6f8f5;
+      --green: #137b61;
+      --green-dark: #105d4c;
+      --mint: #e8f5ef;
+      --lime: #d9edaa;
+      --orange: #f3a35c;
+      --red: #d96957;
+      --shadow: 0 12px 38px rgba(27, 53, 45, .055);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; }
+    .topbar {
+      height: 74px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 max(28px, calc((100vw - 1440px) / 2)); background: rgba(255,255,255,.88);
+      border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 760; letter-spacing: -.04em; font-size: 19px; }
+    .brand-mark { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 12px; background: var(--green); color: #fff; font-size: 17px; }
+    .brand em { font-style: normal; color: var(--green); }
+    .top-actions { display: flex; align-items: center; gap: 12px; }
+    .today { color: var(--muted); font-size: 13px; }
+    .avatar { display: grid; place-items: center; border-radius: 50%; width: 38px; height: 38px; background: #e5eee9; color: var(--green-dark); font-weight: 700; font-size: 13px; }
+    .layout { max-width: 1440px; padding: 34px 34px 60px; margin: auto; }
+    .welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin: 2px 0 25px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: 10px; color: var(--green); font-weight: 800; }
+    h1 { font-size: clamp(26px, 3vw, 34px); letter-spacing: -.055em; margin: 7px 0 5px; line-height: 1.1; }
+    .subtitle { color: var(--muted); font-size: 14px; margin: 0; }
+    .demo-badge { background: #fff3dd; color: #976126; border-radius: 99px; padding: 8px 12px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .overview { display: grid; grid-template-columns: 1.12fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 18px; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .stat { padding: 19px 20px; min-height: 134px; }
+    .stat-head { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; font-weight: 600; }
+    .stat-icon { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; background: var(--mint); color: var(--green); font-weight: 800; font-size: 15px; }
+    .stat-value { font-size: 29px; letter-spacing: -.06em; font-weight: 760; margin-top: 13px; line-height: 1; }
+    .stat-note { color: var(--muted); font-size: 11px; margin-top: 7px; }
+    .stat-note strong { color: var(--green); font-weight: 700; }
+    .rank-card { background: var(--green-dark); color: #fff; border: none; position: relative; overflow: hidden; }
+    .rank-card::after { content: ""; position: absolute; right: -26px; bottom: -70px; width: 175px; height: 175px; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; box-shadow: 0 0 0 24px rgba(255,255,255,.035), 0 0 0 48px rgba(255,255,255,.025); }
+    .rank-card .stat-head, .rank-card .stat-note { color: rgba(255,255,255,.72); }
+    .rank-card .stat-icon { background: rgba(255,255,255,.12); color: var(--lime); }
+    .rank-card .stat-value { color: var(--lime); }
+    .rank-card .stat-note strong { color: #fff; }
+    .main-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(310px, .92fr); gap: 18px; align-items: start; }
+    .column { display: grid; gap: 18px; }
+    .section-card { padding: 21px; }
+    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 17px; }
+    .section-heading h2 { margin: 0; font-size: 16px; letter-spacing: -.035em; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .tag { display: inline-flex; align-items: center; border-radius: 99px; padding: 6px 9px; background: #f3f6f3; color: #63716b; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .focus-list { display: grid; gap: 11px; }
+    .focus-row { display: grid; grid-template-columns: 31px minmax(105px, 1fr) 1.2fr 42px; gap: 12px; align-items: center; }
+    .subject-icon { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; background: #f3f5ed; font-size: 15px; }
+    .topic-name { font-size: 12px; font-weight: 700; }
+    .topic-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+    .progress { height: 7px; border-radius: 99px; background: #edf1ed; overflow: hidden; }
+    .progress span { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+    .progress.low span { background: var(--orange); }
+    .percentage { font-size: 11px; font-weight: 750; text-align: right; }
+    .empty { text-align: center; color: var(--muted); padding: 24px 8px; font-size: 12px; }
+    .chart-area { height: 145px; position: relative; padding: 0 4px 21px; }
+    .chart-area svg { width: 100%; height: 120px; overflow: visible; }
+    .chart-grid { stroke: #edf1ed; stroke-width: 1; }
+    .chart-line { fill: none; stroke: var(--green); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-fill { fill: url(#chartFill); }
+    .chart-dot { fill: #fff; stroke: var(--green); stroke-width: 3; }
+    .chart-labels { display: flex; justify-content: space-between; position: absolute; bottom: 0; left: 4px; right: 4px; color: #94a09b; font-size: 9px; }
+    .chart-empty { display: grid; place-items: center; height: 120px; color: var(--muted); font-size: 12px; }
+    .form-card { padding: 19px; }
+    .form-card .section-heading { margin-bottom: 15px; }
+    .form-stack { display: grid; gap: 11px; }
+    .field { display: grid; gap: 5px; }
+    .field label { font-size: 10px; font-weight: 700; color: #66756e; }
+    .field input, .field select { border: 1px solid #e4eae6; border-radius: 9px; height: 37px; padding: 0 10px; width: 100%; background: #fff; color: var(--ink); font-size: 12px; outline: none; }
+    .field input:focus, .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(19,123,97,.1); }
+    .two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .primary-btn { border: 0; background: var(--green); color: #fff; min-height: 38px; border-radius: 9px; font-size: 11px; font-weight: 750; transition: background .15s, transform .15s; }
+    .primary-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .text-btn { border: 0; background: transparent; color: var(--green); font-size: 10px; font-weight: 750; padding: 6px; }
+    .text-btn:hover { text-decoration: underline; }
+    .toast { position: fixed; right: 22px; bottom: 22px; background: #173d32; color: #fff; padding: 12px 16px; border-radius: 11px; font-size: 12px; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); transition: .2s; pointer-events: none; z-index: 10; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .footer-note { color: #98a39e; text-align: center; font-size: 10px; margin-top: 19px; }
+    @media (max-width: 950px) {
+      .overview { grid-template-columns: repeat(2, 1fr); }
+      .main-grid { grid-template-columns: 1fr; }
+      .column.right { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+    }
+    @media (max-width: 600px) {
+      .topbar { height: 62px; padding: 0 17px; }
+      .layout { padding: 27px 16px 40px; }
+      .welcome { align-items: flex-start; flex-direction: column; gap: 12px; }
+      .overview { gap: 10px; }
+      .stat { padding: 15px; min-height: 123px; }
+      .stat-value { font-size: 25px; }
+      .section-card { padding: 17px 14px; }
+      .focus-row { grid-template-columns: 29px minmax(83px, 1fr) 1fr 36px; gap: 8px; }
+      .column.right { grid-template-columns: 1fr; }
+      .today { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span><span>neet<em>compass</em></span></div>
+      <div class="top-actions"><span class="today" id="today"></span><span class="avatar" aria-label="Student profile">S</span></div>
+    </header>
+    <main class="layout">
+      <div class="welcome">
+        <div><div class="eyebrow">Your preparation, in focus</div><h1>Good morning, future doctor.</h1><p class="subtitle">A clearer view of what you know — and what to work on next.</p></div>
+        <div class="demo-badge" id="dataBadge">Sample data · saved on this device</div>
+      </div>
+
+      <section class="overview" aria-label="Preparation overview">
+        <article class="card stat rank-card">
+          <div class="stat-head"><span>Estimated All India Rank</span><span class="stat-icon" aria-hidden="true">↗</span></div>
+          <div class="stat-value" id="rankValue">—</div>
+          <div class="stat-note" id="rankNote">Add a mock result to estimate your rank</div>
+        </article>
+        <article class="card stat">
+          <div class="stat-head"><span>Latest mock score</span><span class="stat-icon" aria-hidden="true">✎</span></div>
+          <div class="stat-value" id="scoreValue">—</div>
+          <div class="stat-note" id="scoreNote">Out of 720 marks</div>
+        </article>
+        <article class="card stat">
+          <div class="stat-head"><span>Most prepared topic</span><span class="stat-icon" aria-hidden="true">✓</span></div>
+          <div class="stat-value" id="preparedValue" style="font-size:19px;line-height:1.25;margin-top:16px">—</div>
+          <div class="stat-note" id="preparedNote">Based on your topic progress</div>
+        </article>
+        <article class="card stat">
+          <div class="stat-head"><span>Needs more practice</span><span class="stat-icon" aria-hidden="true">↗</span></div>
+          <div class="stat-value" id="weakValue" style="font-size:19px;line-height:1.25;margin-top:16px">—</div>
+          <div class="stat-note" id="weakNote">Based on your question accuracy</div>
+        </article>
+      </section>
+
+      <div class="main-grid">
+        <div class="column">
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><h2>Topic progress</h2><p>Your strongest preparation and the topics to revisit.</p></div>
+              <span class="tag" id="topicCount">0 topics</span>
+            </div>
+            <div class="focus-list" id="topicList"></div>
+          </section>
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><h2>Mock test trend</h2><p>Track how your scores change over time.</p></div>
+              <span class="tag">Last 5 tests</span>
+            </div>
+            <div id="scoreChart" class="chart-area"></div>
+          </section>
+        </div>
+
+        <aside class="column right" aria-label="Update your preparation">
+          <section class="card form-card">
+            <div class="section-heading"><div><h2>Update a topic</h2><p>Log your preparation progress.</p></div></div>
+            <form id="topicForm" class="form-stack">
+              <div class="field"><label for="topicName">Topic name</label><input id="topicName" name="topic" required maxlength="50" placeholder="e.g. Human Physiology"></div>
+              <div class="two-fields">
+                <div class="field"><label for="subject">Subject</label><select id="subject" name="subject"><option>Biology</option><option>Chemistry</option><option>Physics</option></select></div>
+                <div class="field"><label for="progress">Prepared</label><select id="progress" name="progress"><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option></select></div>
+              </div>
+              <button class="primary-btn" type="submit">Save topic progress</button>
+            </form>
+          </section>
+
+          <section class="card form-card">
+            <div class="section-heading"><div><h2>Log practice</h2><p>Accuracy helps find your weak spots.</p></div></div>
+            <form id="practiceForm" class="form-stack">
+              <div class="field"><label for="practiceTopic">Topic</label><select id="practiceTopic" name="topic" required></select></div>
+              <div class="two-fields">
+                <div class="field"><label for="correct">Correct</label><input id="correct" name="correct" type="number" min="0" max="200" required placeholder="e.g. 18"></div>
+                <div class="field"><label for="attempted">Attempted</label><input id="attempted" name="attempted" type="number" min="1" max="200" required placeholder="e.g. 25"></div>
+              </div>
+              <button class="primary-btn" type="submit">Save practice result</button>
+            </form>
+          </section>
+
+          <section class="card form-card">
+            <div class="section-heading"><div><h2>Add a mock test</h2><p>Enter your score and percentile from the result.</p></div></div>
+            <form id="mockForm" class="form-stack">
+              <div class="two-fields">
+                <div class="field"><label for="mockScore">Score (out of 720)</label><input id="mockScore" name="score" type="number" min="0" max="720" required placeholder="e.g. 542"></div>
+                <div class="field"><label for="percentile">Percentile</label><input id="percentile" name="percentile" type="number" min="0" max="100" step="0.01" required placeholder="e.g. 92.5"></div>
+              </div>
+              <div class="field"><label for="candidates">Candidates in test</label><input id="candidates" name="candidates" type="number" min="1" max="10000000" required placeholder="e.g. 100000"></div>
+              <button class="primary-btn" type="submit">Save mock result</button>
+            </form>
+          </section>
+          <button type="button" class="text-btn" id="resetButton">Reset sample data</button>
+        </aside>
+      </div>
+      <p class="footer-note">Your progress is stored only in this browser. Rank is estimated from the percentile and test size you enter — it is not an official NEET prediction.</p>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "neet-compass-v1";
+      const sampleData = {
+        topics: [
+          { name: "Human Physiology", subject: "Biology", progress: 85, correct: 34, attempted: 40 },
+          { name: "Genetics & Evolution", subject: "Biology", progress: 68, correct: 22, attempted: 35 },
+          { name: "Chemical Bonding", subject: "Chemistry", progress: 72, correct: 18, attempted: 30 },
+          { name: "Current Electricity", subject: "Physics", progress: 45, correct: 11, attempted: 25 },
+          { name: "Thermodynamics", subject: "Physics", progress: 55, correct: 16, attempted: 28 }
+        ],
+        mocks: [
+          { score: 438, percentile: 78.4, candidates: 100000, date: "2026-09-23" },
+          { score: 472, percentile: 83.1, candidates: 100000, date: "2026-10-01" },
+          { score: 461, percentile: 81.5, candidates: 100000, date: "2026-10-08" },
+          { score: 506, percentile: 87.8, candidates: 100000, date: "2026-10-15" },
+          { score: 524, percentile: 90.2, candidates: 100000, date: "2026-10-22" }
+        ]
+      };
+      const icons = { Biology: "✿", Chemistry: "⚗", Physics: "⌁" };
+      let data;
+      let isSample = false;
+
+      function loadData() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            data = JSON.parse(stored);
+            if (!Array.isArray(data.topics) || !Array.isArray(data.mocks)) throw new Error("Invalid saved preparation data.");
+            isSample = false;
+          } else {
+            data = structuredClone(sampleData);
+            isSample = true;
+          }
+        } catch (error) {
+          console.error("Could not load saved preparation data.", error);
+          data = structuredClone(sampleData);
+          isSample = true;
+          notify("Saved data could not be loaded; showing sample data.");
+        }
+      }
+
+      function persist() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          isSample = false;
+        } catch (error) {
+          console.error("Could not save preparation data.", error);
+          notify("Could not save your changes in this browser.");
+          return false;
+        }
+        return true;
+      }
+
+      function notify(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        window.clearTimeout(notify.timer);
+        notify.timer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      function accuracy(topic) {
+        return topic.attempted ? Math.round(topic.correct / topic.attempted * 100) : null;
+      }
+
+      function estimatedRank(mock) {
+        return Math.max(1, Math.round((100 - mock.percentile) * mock.candidates / 100) + 1);
+      }
+
+      function localDateString(date = new Date()) {
+        return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+      }
+
+      function formatRank(rank) {
+        return new Intl.NumberFormat("en-IN").format(rank);
+      }
+
+      function render() {
+        document.getElementById("today").textContent = new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(new Date());
+        document.getElementById("dataBadge").textContent = isSample ? "Sample data · saved on this device" : "Your data · saved on this device";
+
+        const topics = data.topics;
+        const mocks = data.mocks;
+        const prepared = topics.length ? topics.reduce((best, topic) => topic.progress > best.progress ? topic : best) : null;
+        const practiced = topics.filter(topic => topic.attempted > 0);
+        const weakest = practiced.length ? practiced.reduce((weak, topic) => accuracy(topic) < accuracy(weak) ? topic : weak) : null;
+        const latestMock = mocks[mocks.length - 1];
+
+        document.getElementById("rankValue").textContent = latestMock ? `#${formatRank(estimatedRank(latestMock))}` : "—";
+        document.getElementById("rankNote").innerHTML = latestMock ? `From <strong>${latestMock.percentile}% percentile</strong> · ${formatRank(latestMock.candidates)} test takers` : "Add a mock result to estimate your rank";
+        document.getElementById("scoreValue").textContent = latestMock ? `${latestMock.score}` : "—";
+        document.getElementById("scoreNote").textContent = latestMock ? `Latest mock · ${new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(new Date(`${latestMock.date}T00:00:00`))}` : "Out of 720 marks";
+        document.getElementById("preparedValue").textContent = prepared ? prepared.name : "No topics yet";
+        document.getElementById("preparedNote").textContent = prepared ? `${prepared.progress}% prepared · ${prepared.subject}` : "Add a topic to start tracking";
+        document.getElementById("weakValue").textContent = weakest ? weakest.name : "No practice yet";
+        document.getElementById("weakNote").textContent = weakest ? `${accuracy(weakest)}% accuracy · ${weakest.subject}` : "Log practice to find weak spots";
+        document.getElementById("topicCount").textContent = `${topics.length} ${topics.length === 1 ? "topic" : "topics"}`;
+
+        const list = document.getElementById("topicList");
+        if (!topics.length) {
+          list.innerHTML = '<div class="empty">No topics yet. Add one to start tracking your preparation.</div>';
+        } else {
+          list.innerHTML = topics.slice().sort((a, b) => b.progress - a.progress).map(topic => {
+            const score = accuracy(topic);
+            return `<div class="focus-row">
+              <span class="subject-icon" aria-hidden="true">${icons[topic.subject] || "✦"}</span>
+              <div><div class="topic-name">${escapeHtml(topic.name)}</div><div class="topic-sub">${escapeHtml(topic.subject)}${score === null ? "" : ` · ${score}% accuracy`}</div></div>
+              <div class="progress ${topic.progress < 50 ? "low" : ""}" role="progressbar" aria-label="${escapeHtml(topic.name)} prepared" aria-valuenow="${topic.progress}" aria-valuemin="0" aria-valuemax="100"><span style="width:${topic.progress}%"></span></div>
+              <span class="percentage">${topic.progress}%</span>
+            </div>`;
+          }).join("");
+        }
+        renderPracticeOptions(topics);
+        renderChart(mocks);
+      }
+
+      function renderPracticeOptions(topics) {
+        const select = document.getElementById("practiceTopic");
+        const current = select.value;
+        select.innerHTML = topics.length
+          ? topics.map((topic, index) => `<option value="${index}">${escapeHtml(topic.name)} · ${escapeHtml(topic.subject)}</option>`).join("")
+          : '<option value="">Add a topic first</option>';
+        select.disabled = !topics.length;
+        document.getElementById("practiceForm").querySelector("button").disabled = !topics.length;
+        document.getElementById("practiceForm").querySelector("button").style.opacity = topics.length ? "1" : ".55";
+        if (current && Number(current) < topics.length) select.value = current;
+      }
+
+      function renderChart(mocks) {
+        const target = document.getElementById("scoreChart");
+        if (!mocks.length) {
+          target.innerHTML = '<div class="chart-empty">Add mock results to see your score trend.</div>';
+          return;
+        }
+        const shown = mocks.slice(-5);
+        const values = shown.map(mock => mock.score);
+        const min = Math.max(0, Math.min(...values) - 40);
+        const max = Math.min(720, Math.max(...values) + 40);
+        const spread = Math.max(80, max - min);
+        const coords = values.map((value, index) => {
+          const x = shown.length === 1 ? 50 : 5 + index * 90 / (shown.length - 1);
+          const y = 105 - ((value - min) / spread) * 85;
+          return `${x},${y}`;
+        });
+        const dateLabels = shown.map(mock => new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(new Date(`${mock.date}T00:00:00`)));
+        target.innerHTML = `<svg viewBox="0 0 100 120" preserveAspectRatio="none" role="img" aria-label="Mock test score trend: ${values.join(", ")} out of 720">
+          <defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#137b61" stop-opacity=".17"/><stop offset="1" stop-color="#137b61" stop-opacity="0"/></linearGradient></defs>
+          <line class="chart-grid" x1="0" y1="20" x2="100" y2="20"/><line class="chart-grid" x1="0" y1="62" x2="100" y2="62"/><line class="chart-grid" x1="0" y1="104" x2="100" y2="104"/>
+          <polygon class="chart-fill" points="5,120 ${coords.join(" ")} 95,120"/><polyline class="chart-line" points="${coords.join(" ")}"/>
+          ${coords.map(point => { const [x, y] = point.split(","); return `<circle class="chart-dot" cx="${x}" cy="${y}" r="1.7"/>`; }).join("")}
+        </svg><div class="chart-labels">${dateLabels.map(date => `<span>${date}</span>`).join("")}</div>`;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+      }
+
+      document.getElementById("topicForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const name = String(form.get("topic")).trim();
+        const subject = String(form.get("subject"));
+        const progress = Number(form.get("progress"));
+        if (!name || !["Biology", "Chemistry", "Physics"].includes(subject) || ![25, 50, 75, 100].includes(progress)) return;
+        const existing = data.topics.find(topic => topic.name.toLowerCase() === name.toLowerCase() && topic.subject === subject);
+        if (existing) existing.progress = progress;
+        else data.topics.push({ name, subject, progress, correct: 0, attempted: 0 });
+        if (persist()) {
+          event.currentTarget.reset();
+          render();
+          notify(existing ? "Topic progress updated." : "Topic added.");
+        }
+      });
+
+      document.getElementById("practiceForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const index = Number(form.get("topic"));
+        const correct = Number(form.get("correct"));
+        const attempted = Number(form.get("attempted"));
+        const topic = data.topics[index];
+        if (!topic || !Number.isInteger(correct) || !Number.isInteger(attempted) || correct < 0 || attempted < 1 || correct > attempted || attempted > 200) {
+          notify("Enter valid question totals; correct cannot exceed attempted.");
+          return;
+        }
+        topic.correct += correct;
+        topic.attempted += attempted;
+        if (persist()) {
+          event.currentTarget.reset();
+          render();
+          notify("Practice result saved.");
+        }
+      });
+
+      document.getElementById("mockForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const score = Number(form.get("score"));
+        const percentile = Number(form.get("percentile"));
+        const candidates = Number(form.get("candidates"));
+        if (!Number.isInteger(score) || score < 0 || score > 720 || !Number.isFinite(percentile) || percentile < 0 || percentile > 100 || !Number.isInteger(candidates) || candidates < 1) {
+          notify("Enter a score from 0–720, percentile from 0–100, and a valid candidate count.");
+          return;
+        }
+        data.mocks.push({ score, percentile, candidates, date: localDateString() });
+        if (persist()) {
+          event.currentTarget.reset();
+          render();
+          notify("Mock result saved.");
+        }
+      });
+
+      document.getElementById("resetButton").addEventListener("click", () => {
+        data = structuredClone(sampleData);
+        isSample = true;
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          render();
+          notify("Sample data restored.");
+        } catch (error) {
+          console.error("Could not reset preparation data.", error);
+          notify("Could not reset saved data.");
+        }
+      });
+
+      loadData();
+      render();
+    })();
+  </script>
+</body>
+</html>
